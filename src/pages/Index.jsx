@@ -3,6 +3,7 @@
 import { Container, Text, VStack, Input, Button, Box, Heading } from "@chakra-ui/react";
 import { useState } from "react";
 import { scrapeCompanyWebsite } from "../utils/scraper";
+import { generateAnalysis } from "../utils/openai";
 
 // Example of using react-icons
 // import { FaRocket } from "react-icons/fa";
@@ -11,11 +12,16 @@ import { scrapeCompanyWebsite } from "../utils/scraper";
 const Index = () => {
   const [url, setUrl] = useState("");
   const [result, setResult] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
 
   const handleScrape = async () => {
     const data = await scrapeCompanyWebsite(url);
     setResult(data);
+    const analysisText = `About Us: ${data.aboutUs}\nCareers: ${data.careers}\nNews: ${data.news}`;
+    const analysisResult = await generateAnalysis(analysisText);
+    setAnalysis(analysisResult);
   };
+
   return (
     <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
       <VStack spacing={4}>
@@ -31,7 +37,12 @@ const Index = () => {
             <Text><strong>News:</strong> {result.news}</Text>
           </Box>
         )}
-        
+        {analysis && (
+          <Box mt={4} p={4} borderWidth="1px" borderRadius="lg">
+            <Heading as="h2" size="md">AI Analysis</Heading>
+            <Text>{analysis}</Text>
+          </Box>
+        )}
       </VStack>
     </Container>
   );
