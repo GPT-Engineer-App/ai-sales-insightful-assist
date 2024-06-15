@@ -1,7 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-const scrapeCompanyWebsite = async (url) => {
+export const scrapeCompanyWebsite = async (url) => {
   try {
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
@@ -21,6 +21,3 @@ const scrapeCompanyWebsite = async (url) => {
   }
 };
 
-module.exports = {
-  scrapeCompanyWebsite
-};
