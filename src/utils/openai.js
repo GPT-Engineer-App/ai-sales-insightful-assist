@@ -1,10 +1,8 @@
-import { Configuration, OpenAIApi } from 'openai';
+import { OpenAIApi } from 'openai';
 
-const configuration = new Configuration({
+const openai = new OpenAIApi({
   apiKey: process.env.OPENAI_API_KEY || 'your-default-api-key',
 });
-
-const openai = new OpenAIApi(configuration);
 
 export const generateAnalysis = async (text) => {
   try {
