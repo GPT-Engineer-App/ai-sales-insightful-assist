@@ -1,5 +1,5 @@
 import { Container, Text, VStack, Input, Button, Box, Heading, Textarea } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { scrapeCompanyWebsite } from "../utils/scraper";
 import { generateAnalysis } from "../utils/openai";
 import { generateReport } from "../utils/reporting";
@@ -14,32 +14,49 @@ const Index = () => {
   const [feedback, setFeedback] = useState(""); 
 
   const handleScrape = async () => {
-    const data = await scrapeCompanyWebsite(url);
-    setResult(data);
-    const analysisText = `About Us: ${data.aboutUs}\nCareers: ${data.careers}\nNews: ${data.news}`;
-    const analysisResult = await generateAnalysis(analysisText);
-    setAnalysis(analysisResult);
+    try {
+      const data = await scrapeCompanyWebsite(url);
+      setResult(data);
+      const analysisText = `About Us: ${data.aboutUs}\nCareers: ${data.careers}\nNews: ${data.news}`;
+      const analysisResult = await generateAnalysis(analysisText);
+      setAnalysis(analysisResult);
+    } catch (error) {
+      console.error("Error scraping website:", error);
+    }
   };
 
   const handleCompanyResearch = async () => {
-    const stockData = await fetchStockData(companyName);
-    const newsData = await fetchNewsData(companyName);
-    const socialMediaData = await fetchSocialMediaData(companyName);
-    const combinedData = {
-      stockData,
-      newsData,
-      socialMediaData,
-    };
-    setResult(combinedData);
-    const analysisText = `Stock Data: ${JSON.stringify(stockData)}\nNews Data: ${JSON.stringify(newsData)}\nSocial Media Data: ${JSON.stringify(socialMediaData)}`;
-    const analysisResult = await generateAnalysis(analysisText);
-    setAnalysis(analysisResult);
+    try {
+      const stockData = await fetchStockData(companyName);
+      const newsData = await fetchNewsData(companyName);
+      const socialMediaData = await fetchSocialMediaData(companyName);
+      const combinedData = {
+        stockData,
+        newsData,
+        socialMediaData,
+      };
+      setResult(combinedData);
+      const analysisText = `Stock Data: ${JSON.stringify(stockData)}\nNews Data: ${JSON.stringify(newsData)}\nSocial Media Data: ${JSON.stringify(socialMediaData)}`;
+      const analysisResult = await generateAnalysis(analysisText);
+      setAnalysis(analysisResult);
+    } catch (error) {
+      console.error("Error fetching company data:", error);
+    }
   };
 
   const handleFeedbackSubmit = async () => {
-    await submitFeedback(feedback);
-    setFeedback(""); 
+    try {
+      await submitFeedback(feedback);
+      setFeedback("");
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+    }
   };
+
+  useEffect(() => {
+    console.log("Result:", result);
+    console.log("Analysis:", analysis);
+  }, [result, analysis]);
 
   return (
     <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
