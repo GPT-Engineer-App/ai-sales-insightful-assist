@@ -45,7 +45,7 @@ const Index = () => {
             <Text>{analysis}</Text>
           </Box>
         )}
-        <Button onClick={() => generateReport({ name: "Example Company", industry: "Technology", stockPrice: "$100", aboutUs: result.aboutUs, careers: result.careers, news: result.news, analysis })} colorScheme="blue">Generate Report</Button>
+        <Button onClick={() => generateReport({ name: "Example Company", industry: "Technology", stockPrice: "$100", aboutUs: result?.aboutUs, careers: result?.careers, news: result?.news, analysis })} colorScheme="blue">Generate Report</Button>
         <Box mt={4} p={4} borderWidth="1px" borderRadius="lg">
           <Heading as="h2" size="md">Provide Feedback</Heading>
           <Textarea placeholder="Enter your feedback here" value={feedback} onChange={(e) => setFeedback(e.target.value)} />
