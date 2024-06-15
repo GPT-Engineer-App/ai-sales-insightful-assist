@@ -25,6 +25,7 @@
         "@emotion/styled": "^11.11.0",
         "axios": "^1.7.2",
         "cheerio": "^1.0.0-rc.12",
+        "docx": "^8.5.0",
         "framer-motion": "^10.16.15",
         "openai": "^3.1.0",
         "react": "^18.2.0",

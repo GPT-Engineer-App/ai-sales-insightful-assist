@@ -4,6 +4,7 @@ import { Container, Text, VStack, Input, Button, Box, Heading } from "@chakra-ui
 import { useState } from "react";
 import { scrapeCompanyWebsite } from "../utils/scraper";
 import { generateAnalysis } from "../utils/openai";
+import { generateReport } from "../utils/reporting";
 
 // Example of using react-icons
 // import { FaRocket } from "react-icons/fa";
@@ -43,6 +44,7 @@ const Index = () => {
             <Text>{analysis}</Text>
           </Box>
         )}
+        <Button onClick={() => generateReport({ name: "Example Company", industry: "Technology", stockPrice: "$100", aboutUs: result.aboutUs, careers: result.careers, news: result.news, analysis })} colorScheme="blue">Generate Report</Button>
       </VStack>
     </Container>
   );
