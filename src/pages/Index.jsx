@@ -1,15 +1,17 @@
-import { Container, Text, VStack, Input, Button, Box, Heading, Textarea } from "@chakra-ui/react";
+import { Container, Text, VStack, Input, Button, Box, Heading, Textarea, Select } from "@chakra-ui/react";
 import { useState } from "react";
 import { scrapeCompanyWebsite } from "../utils/scraper";
 import { generateAnalysis } from "../utils/openai";
 import { generateReport } from "../utils/reporting";
-import { submitFeedback } from "../utils/feedback"; // Import the feedback utility
+
 
 const Index = () => {
   const [url, setUrl] = useState("");
   const [result, setResult] = useState(null);
   const [analysis, setAnalysis] = useState(null);
-  const [feedback, setFeedback] = useState(""); // State for feedback
+  const [rating, setRating] = useState("");
+  const [comments, setComments] = useState("");
+  const [suggestions, setSuggestions] = useState("");
 
   const handleScrape = async () => {
     const data = await scrapeCompanyWebsite(url);
@@ -19,9 +21,14 @@ const Index = () => {
     setAnalysis(analysisResult);
   };
 
-  const handleFeedbackSubmit = async () => {
-    await submitFeedback(feedback);
-    setFeedback(""); // Clear feedback after submission
+  const handleFeedbackSubmit = () => {
+    const feedback = {
+      rating,
+      comments,
+      suggestions,
+    };
+    console.log("Feedback submitted:", feedback);
+    // Here you can add the logic to store the feedback, e.g., sending it to a backend server
   };
 
   return (
@@ -48,7 +55,15 @@ const Index = () => {
         <Button onClick={() => generateReport({ name: "Example Company", industry: "Technology", stockPrice: "$100", aboutUs: result.aboutUs, careers: result.careers, news: result.news, analysis })} colorScheme="blue">Generate Report</Button>
         <Box mt={4} p={4} borderWidth="1px" borderRadius="lg">
           <Heading as="h2" size="md">Provide Feedback</Heading>
-          <Textarea placeholder="Enter your feedback here" value={feedback} onChange={(e) => setFeedback(e.target.value)} />
+          <Select placeholder="Rate the insights" value={rating} onChange={(e) => setRating(e.target.value)}>
+            <option value="1">1 Star</option>
+            <option value="2">2 Stars</option>
+            <option value="3">3 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="5">5 Stars</option>
+          </Select>
+          <Textarea placeholder="Comments" value={comments} onChange={(e) => setComments(e.target.value)} mt={2} />
+          <Textarea placeholder="Suggestions" value={suggestions} onChange={(e) => setSuggestions(e.target.value)} mt={2} />
           <Button onClick={handleFeedbackSubmit} colorScheme="green" mt={2}>Submit Feedback</Button>
         </Box>
       </VStack>
