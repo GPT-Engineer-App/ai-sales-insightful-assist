@@ -10,18 +10,29 @@ const Index = () => {
   const [result, setResult] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [feedback, setFeedback] = useState(""); // State for feedback
+  const [error, setError] = useState(null); // State for error messages
 
   const handleScrape = async () => {
-    const data = await scrapeCompanyWebsite(url);
-    setResult(data);
-    const analysisText = `About Us: ${data.aboutUs}\nCareers: ${data.careers}\nNews: ${data.news}`;
-    const analysisResult = await generateAnalysis(analysisText);
-    setAnalysis(analysisResult);
+    try {
+      const data = await scrapeCompanyWebsite(url);
+      setResult(data);
+      const analysisText = `About Us: ${data.aboutUs}\nCareers: ${data.careers}\nNews: ${data.news}`;
+      const analysisResult = await generateAnalysis(analysisText);
+      setAnalysis(analysisResult);
+    } catch (error) {
+      console.error(`Error during scraping or analysis: ${error}`);
+      setError('Error during scraping or analysis');
+    }
   };
 
   const handleFeedbackSubmit = async () => {
-    await submitFeedback(feedback);
-    setFeedback(""); // Clear feedback after submission
+    try {
+      await submitFeedback(feedback);
+      setFeedback(""); // Clear feedback after submission
+    } catch (error) {
+      console.error(`Error submitting feedback: ${error}`);
+      setError('Error submitting feedback');
+    }
   };
 
   return (
@@ -31,6 +42,11 @@ const Index = () => {
         <Text>Enter a company website URL to scrape information.</Text>
         <Input placeholder="Enter URL" value={url} onChange={(e) => setUrl(e.target.value)} />
         <Button onClick={handleScrape} colorScheme="teal">Scrape Website</Button>
+        {error && (
+          <Box mt={4} p={4} borderWidth="1px" borderRadius="lg" bg="red.100">
+            <Text color="red.800">{error}</Text>
+          </Box>
+        )}
         {result && (
           <Box mt={4} p={4} borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="md">Scraped Data</Heading>

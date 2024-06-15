@@ -6,6 +6,6 @@ export const submitFeedback = async (feedback) => {
     return response.data;
   } catch (error) {
     console.error(`Error submitting feedback: ${error}`);
-    return null;
+    return 'Error submitting feedback';
   }
 };

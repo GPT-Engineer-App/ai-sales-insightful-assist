@@ -7,6 +7,11 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 export const generateAnalysis = async (text) => {
+  if (!configuration.apiKey) {
+    console.error('OpenAI API key is not set.');
+    return 'Error: OpenAI API key is not set.';
+  }
+
   try {
     const response = await openai.createCompletion({
       model: 'text-davinci-003',

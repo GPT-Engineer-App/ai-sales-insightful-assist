@@ -6,9 +6,9 @@ export const scrapeCompanyWebsite = async (url) => {
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
 
-    const aboutUs = $('#about-us').text();
-    const careers = $('#careers').text();
-    const news = $('#news').text();
+    const aboutUs = $('#about-us').text() || 'No About Us information found.';
+    const careers = $('#careers').text() || 'No Careers information found.';
+    const news = $('#news').text() || 'No News information found.';
 
     return {
       aboutUs,
@@ -16,8 +16,12 @@ export const scrapeCompanyWebsite = async (url) => {
       news
     };
   } catch (error) {
-    console.error(`Error scraping website: ${error}`);
-    return {};
+    console.error(`Error scraping website ${url}: ${error}`);
+    return {
+      aboutUs: 'Error fetching About Us information.',
+      careers: 'Error fetching Careers information.',
+      news: 'Error fetching News information.'
+    };
   }
 };
 
