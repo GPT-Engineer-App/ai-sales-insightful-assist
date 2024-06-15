@@ -3,13 +3,15 @@ import { useState } from "react";
 import { scrapeCompanyWebsite } from "../utils/scraper";
 import { generateAnalysis } from "../utils/openai";
 import { generateReport } from "../utils/reporting";
-import { submitFeedback } from "../utils/feedback"; // Import the feedback utility
+import { submitFeedback } from "../utils/feedback";
+import { fetchStockData, fetchNewsData, fetchSocialMediaData } from "../utils/api"; // Import the necessary API functions
 
 const Index = () => {
   const [url, setUrl] = useState("");
+  const [companyName, setCompanyName] = useState(""); // State for company name or ticker
   const [result, setResult] = useState(null);
   const [analysis, setAnalysis] = useState(null);
-  const [feedback, setFeedback] = useState(""); // State for feedback
+  const [feedback, setFeedback] = useState(""); 
 
   const handleScrape = async () => {
     const data = await scrapeCompanyWebsite(url);
@@ -19,9 +21,24 @@ const Index = () => {
     setAnalysis(analysisResult);
   };
 
+  const handleCompanyResearch = async () => {
+    const stockData = await fetchStockData(companyName);
+    const newsData = await fetchNewsData(companyName);
+    const socialMediaData = await fetchSocialMediaData(companyName);
+    const combinedData = {
+      stockData,
+      newsData,
+      socialMediaData,
+    };
+    setResult(combinedData);
+    const analysisText = `Stock Data: ${JSON.stringify(stockData)}\nNews Data: ${JSON.stringify(newsData)}\nSocial Media Data: ${JSON.stringify(socialMediaData)}`;
+    const analysisResult = await generateAnalysis(analysisText);
+    setAnalysis(analysisResult);
+  };
+
   const handleFeedbackSubmit = async () => {
     await submitFeedback(feedback);
-    setFeedback(""); // Clear feedback after submission
+    setFeedback(""); 
   };
 
   return (
@@ -31,12 +48,15 @@ const Index = () => {
         <Text>Enter a company website URL to scrape information.</Text>
         <Input placeholder="Enter URL" value={url} onChange={(e) => setUrl(e.target.value)} />
         <Button onClick={handleScrape} colorScheme="teal">Scrape Website</Button>
+        <Text>Or enter a company name or ticker to start research.</Text>
+        <Input placeholder="Enter Company Name or Ticker" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+        <Button onClick={handleCompanyResearch} colorScheme="teal">Start Research</Button>
         {result && (
           <Box mt={4} p={4} borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="md">Scraped Data</Heading>
-            <Text><strong>About Us:</strong> {result.aboutUs}</Text>
-            <Text><strong>Careers:</strong> {result.careers}</Text>
-            <Text><strong>News:</strong> {result.news}</Text>
+            <Heading as="h2" size="md">Research Data</Heading>
+            <Text><strong>Stock Data:</strong> {JSON.stringify(result.stockData)}</Text>
+            <Text><strong>News Data:</strong> {JSON.stringify(result.newsData)}</Text>
+            <Text><strong>Social Media Data:</strong> {JSON.stringify(result.socialMediaData)}</Text>
           </Box>
         )}
         {analysis && (
@@ -45,7 +65,7 @@ const Index = () => {
             <Text>{analysis}</Text>
           </Box>
         )}
-        <Button onClick={() => generateReport({ name: "Example Company", industry: "Technology", stockPrice: "$100", aboutUs: result?.aboutUs, careers: result?.careers, news: result?.news, analysis })} colorScheme="blue">Generate Report</Button>
+        <Button onClick={() => generateReport({ name: companyName, stockData: result?.stockData, newsData: result?.newsData, socialMediaData: result?.socialMediaData, analysis })} colorScheme="blue">Generate Report</Button>
         <Box mt={4} p={4} borderWidth="1px" borderRadius="lg">
           <Heading as="h2" size="md">Provide Feedback</Heading>
           <Textarea placeholder="Enter your feedback here" value={feedback} onChange={(e) => setFeedback(e.target.value)} />
